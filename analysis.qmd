@@ -48,6 +48,7 @@ income_tx |>
 
 ```{r}
 #| message: false
+#| cache: true
 edu_state <- get_acs(
   geography = "state",
   variables = c(
@@ -101,6 +102,7 @@ edu_state |>
 
 ```{r}
 #| message: false
+#| cache: true
 age_ca <- get_acs(
   geography = "county",
   variables = c(
