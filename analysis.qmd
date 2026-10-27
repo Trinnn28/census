@@ -98,3 +98,51 @@ edu_state |>
     plot.caption = element_text(color = "gray40", hjust = 0, margin = margin(t = 10))
   )
 ```
+
+```{r}
+#| message: false
+age_ca <- get_acs(
+  geography = "county",
+  variables = c(
+    median_age = "B01002_001",
+    population = "B01003_001"
+  ),
+  state = "CA",
+  year = 2020,
+  geometry = FALSE
+)
+```
+
+```{r}
+age_ca_wide <- age_ca |>
+  select(NAME, variable, estimate) |>
+  pivot_wider(names_from = variable, values_from = estimate)
+
+ggplot(age_ca_wide, aes(x = population, y = median_age)) +
+  geom_point(color = "steelblue", alpha = 0.75, size = 2) +
+  geom_text(
+    data = age_ca_wide |>
+      slice_max(population, n = 5, with_ties = FALSE) |>
+      arrange(desc(population)) |>
+      mutate(label_y = median_age + c(3, -1, 4, -3, 3)),
+    aes(y = label_y, label = stringr::str_remove(NAME, ", California")),
+    hjust = 1.1,
+    vjust = -0.5,
+    size = 3,
+    fontface = "bold"
+  ) +
+  scale_x_log10(labels = scales::label_comma()) +
+  labs(
+    title = "Population and Median Age Across California Counties",
+    x = "County population (log scale)",
+    y = "Median age (years)",
+    caption = "Source: U.S. Census Bureau, 2020 ACS 5-year estimates."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", margin = margin(b = 8)),
+    plot.title.position = "plot",
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(color = "gray40", hjust = 0, margin = margin(t = 10))
+  )
+```
